@@ -1,0 +1,26 @@
+
+
+###
+
+POST http://localhost:1000/api/mail2rajja@gmail.com/tests
+# Content-Type: application/x-www-form-urlencoded
+Content-Type: application/json
+
+{
+    "firstName": "Joseph",
+    "lastName": "Rajan",
+    "phone": "09840185011",
+    "phoneType": -1,
+    "email": "mail2rajja@gmail.com",
+    "confirmEmail": "mail2rajja@gmail.com",
+    "subscribeMe": false
+}
+
+# { "title": "React PUT Request Example" }
+### /api/:userid/:collection/:id"
+PUT http://localhost:1000/api/mail2rajja@gmail.com/tests/6255a597b838cc6554499493
+Content-Type: application/json
+
+{
+    "social": {"media":"two"}
+}
