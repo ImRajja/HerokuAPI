@@ -14,6 +14,6 @@
   },
   "scripts": {
     "start": "node apiServer.js",
-    "build": "node /output/apiServer.js"
+    "build": "npm run build"
   }
 }
