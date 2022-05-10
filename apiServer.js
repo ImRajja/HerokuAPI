@@ -13,9 +13,17 @@ app.set("json spaces", 4);
 // app.use(express.urlencoded({ extended: false })); // support form-encoded bodies (for bearer tokens)
 
 var bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: false })); // support form-encoded bodies (for bearer tokens)
-app.use(bodyParser.json());
+// app.use(
+//   bodyParser.urlencoded({
+//     parameterLimit: 100000,
+//     limit: "50mb",
+//     extended: true,
+//   })
+// ); // support form-encoded bodies (for bearer tokens)
+// app.use(bodyParser.json());
 
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb" }));
 app.use(cors());
 
 // Global error handling
@@ -36,6 +44,27 @@ const dbo = require("./db");
 // // app.options("/api/:userid/:collection", cors());
 
 // --------------------GET-----------------------------
+app.get("/api/:userid/:collection/:id", cors(), async function (req, res) {
+  const dbConnect = dbo.getDb();
+  var ObjectId = require("mongodb").ObjectId;
+
+  console.log(
+    `-------${req.params.collection} Collection -------${req.params.userid} userId--------`
+  );
+  dbConnect
+    .collection(req.params.collection)
+    .find({ email: req.params.userid, _id: ObjectId(req.params.id) })
+    .toArray(function (err, result) {
+      if (err) {
+        console.log("---------------->err---------------->");
+        console.log(err);
+        console.log("<----------------err<----------------");
+        res.status(400).send("Error fetching listings!");
+      } else {
+        res.json(result);
+      }
+    });
+});
 
 app.get("/api/:userid/:collection", cors(), async function (req, res) {
   const dbConnect = dbo.getDb();
@@ -49,6 +78,9 @@ app.get("/api/:userid/:collection", cors(), async function (req, res) {
     .limit(50)
     .toArray(function (err, result) {
       if (err) {
+        console.log("---------------->err---------------->");
+        console.log(err);
+        console.log("<----------------err<----------------");
         res.status(400).send("Error fetching listings!");
       } else {
         res.json(result);
@@ -70,14 +102,22 @@ app.post("/api/:userid/:collection", async function (req, res) {
 
     dbConnect
       .collection(req.params.collection)
-      .insertOne(req.body, function (err, result) {
-        if (err) {
-          res.status(400).send("Error inserting matches!");
-        } else {
-          console.log(`Added a new item with id ${result.insertedId}`);
-          res.status(204).send();
+      .insertOne(
+        { ...req.body, createdAt: new Date(), updatedAt: new Date() },
+        function (err, result) {
+          if (err) {
+            console.log("---------------->err---------------->");
+            console.log(err);
+            console.log("<----------------err<----------------");
+            res.status(400).send("Error inserting matches!");
+          } else {
+            console.log(`Added a new item with id ${result.insertedId}`);
+            // res.status(204).send(result.insertedId);
+            // res.status(204).json(result);
+            res.json(result);
+          }
         }
-      });
+      );
   }
 });
 
