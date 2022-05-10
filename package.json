@@ -13,6 +13,7 @@
     "mongodb": "^4.5.0"
   },
   "scripts": {
-    "start": "node apiServer.js"
+    "start": "node apiServer.js",
+    "build": "node apiServer.js"
   }
 }
